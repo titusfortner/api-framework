@@ -1,24 +1,21 @@
 require 'spec_helper'
 
-include Booking
-include Authorise
-
 describe('Restful-booker') do
 
   it('GET /booking should return a 200') do
-    response = Booking.all_bookings
+    response = Booking.all
 
     expect(response.code).to be(200)
   end
 
   it('GET /booking/{id} should return a 200') do
-    response = Booking.specific_booking(1, :json)
+    response = Booking.get(1, :json)
 
     expect(response.code).to be(200)
   end
 
   it('GET /booking/{id} should return a 418 when sent a bad accept header') do
-    response = Booking.specific_booking(1, :text)
+    response = Booking.get(1, :text)
 
     expect(response.code).to be(418)
   end
@@ -34,7 +31,7 @@ describe('Restful-booker') do
       self.additionalneeds = 'Breakfast'
     end
 
-    response = Booking.create_booking(payload.to_json, :json)
+    response = Booking.create(payload.to_json, :json)
 
     expect(response.code).to be(200)
   end
@@ -50,7 +47,7 @@ describe('Restful-booker') do
       self.additionalneeds = 'Breakfast'
     end
 
-    created_response = Booking.create_booking(payload.to_json, :json)
+    created_response = Booking.create(payload.to_json, :json)
 
     auth_payload = AuthorisePayload.new do
       self.username = "admin"
@@ -59,7 +56,7 @@ describe('Restful-booker') do
 
     auth_response = Authorise.post_credentials(auth_payload.to_json)
 
-    delete_response = Booking.delete_booking(JSON.parse(created_response.body)["bookingid"].to_i, JSON.parse(auth_response.body)["token"])
+    delete_response = Booking.delete(JSON.parse(created_response.body)["bookingid"].to_i, JSON.parse(auth_response.body)["token"])
 
     expect(delete_response.code).to be(201)
   end

@@ -1,11 +1,14 @@
-require 'rest-client'
+class Authorise < Base
+  class << self
+    def end_point
+      "#{ENV['SITE_URL']}/auth"
+    end
 
-module Authorise
-
-  def post_credentials(payload)
-    RestClient.post 'https://restful-booker.herokuapp.com/auth', payload, content_type: :json
-  rescue => e
-    e.to_s
+    def post_credentials(payload)
+      rest_call(:post,
+                url: self.end_point,
+                payload: payload,
+                headers: {content_type: :json})
+    end
   end
-
 end
